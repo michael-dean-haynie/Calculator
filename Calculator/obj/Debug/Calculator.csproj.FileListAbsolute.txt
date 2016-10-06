@@ -1,0 +1,6 @@
+d:\learning-aspdotnet\Calculator\Calculator\bin\Debug\Calculator.exe.config
+d:\learning-aspdotnet\Calculator\Calculator\bin\Debug\Calculator.exe
+d:\learning-aspdotnet\Calculator\Calculator\bin\Debug\Calculator.pdb
+d:\learning-aspdotnet\Calculator\Calculator\obj\Debug\Calculator.csprojResolveAssemblyReference.cache
+d:\learning-aspdotnet\Calculator\Calculator\obj\Debug\Calculator.exe
+d:\learning-aspdotnet\Calculator\Calculator\obj\Debug\Calculator.pdb
