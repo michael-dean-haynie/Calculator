@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-//pu@ geting the index of char where the regex matched for the number
+//pu@ Not persisting parenthasis values correctly. Sets them to zero some how. 
 
 namespace Calculator
 {
@@ -23,40 +23,40 @@ namespace Calculator
 
         public float Calculate(String exp)
         {
-            //// Check for parenthesis
-            //int openParenIdx = 0;
-            //int closeParenIdx = 0;
-            //while (exp.Contains("("))
-            //{ 
-            //    // opening Parenthesis
-            //    openParenIdx = exp.IndexOf("(");
+            // Check for parenthesis
+            int openParenIdx = 0;
+            int closeParenIdx = 0;
+            while (exp.Contains("("))
+            {
+                // opening Parenthesis
+                openParenIdx = exp.IndexOf("(");
 
-            //    // closing Parenthesis
-            //    int parenDepth = 0;
-            //    char[] expCA = exp.ToCharArray();
-            //    for (int i = 0; i < exp.Length; i++)
-            //    {
-            //        if (expCA[i] == '(')
-            //        {
-            //            parenDepth++;
-            //        }
-            //        else if (expCA[i] == ')')
-            //        {
-            //            parenDepth--;
-            //        }
+                // closing Parenthesis
+                int parenDepth = 0;
+                char[] expCA = exp.ToCharArray();
+                for (int i = 0; i < exp.Length; i++)
+                {
+                    if (expCA[i] == '(')
+                    {
+                        parenDepth++;
+                    }
+                    else if (expCA[i] == ')')
+                    {
+                        parenDepth--;
+                    }
 
-            //        if (expCA[i] == ')' && parenDepth == 0)
-            //        {
-            //            closeParenIdx = i;
-            //            break;
-            //        }
-            //    }
+                    if (expCA[i] == ')' && parenDepth == 0)
+                    {
+                        closeParenIdx = i;
+                        break;
+                    }
+                }
 
-            //    // new exp
-            //    string expPref = exp.Substring(0, openParenIdx);
-            //    string expSuff = exp.Substring(closeParenIdx + 1, exp.Length - closeParenIdx);
-            //    exp = expPref + this.Calculate(exp.Substring(openParenIdx + 1, closeParenIdx - openParenIdx - 1)) + expSuff;
-            //}
+                // new exp
+                string expPref = exp.Substring(0, openParenIdx);
+                string expSuff = exp.Substring(closeParenIdx, (exp.Length - closeParenIdx));
+                exp = expPref + this.Calculate(exp.Substring(openParenIdx + 1, closeParenIdx - openParenIdx - 1)) + expSuff;
+            }
 
             // Tokenize numbers and operations/signs
             List<Token> tokens = new List<Token>();
@@ -80,36 +80,57 @@ namespace Calculator
             // Sort tokens by Index
             tokens = tokens.OrderBy(x => x.Index).ToList();
 
-            // Combine number tokens and sign tokens into entities
+            // Combine number tokens and sign tokens
+            // Removing signs by setting token to empty string: ""
             for (int i = 0; i < tokens.Count; i++)
             { 
                 if (i != tokens.Count)
                 {
                     if (tokens[i].Value == "-")
-                    { 
-                        tokens
+                    {
+                        tokens[i].Value = "";
+                        tokens[i + 1].Value = (float.Parse(tokens[i + 1].Value) * (-1)).ToString();
+                    }
+
+                    if (tokens[i].Value == "+")
+                    {
+                        tokens[i].Value = "";
                     }
                 }
             }
-
-                // Display Tokens!
-                if (tokens.Count > 0)
+            
+            // Re-index tokens
+            List<Token> tempTokens = new List<Token>();
+            int idx = 0;
+            foreach (Token t in tokens)
+            {
+                if (t.Value != "")
                 {
-                    Console.WriteLine("Tokens:");
-                    for (int i = 0; i < tokens.Count; i++)
-                    {
-                        Console.WriteLine(i.ToString() + ": [" + tokens[i].Index + "] (" + tokens[i].Type.Name + "|" + tokens[i].Type.Pattern + ") " + tokens[i].Value);
-                    }
+                    t.Index = idx;
+                    tempTokens.Add(t);
                 }
-                else
+            }
+            tokens = tempTokens;
+            
+
+            // Display Tokens!
+            if (tokens.Count > 0)
+            {
+                Console.WriteLine("Tokens:");
+                for (int i = 0; i < tokens.Count; i++)
                 {
-                    Console.WriteLine("No tokens were found :(");
+                    Console.WriteLine(i.ToString() + ": [" + tokens[i].Index + "] (" + tokens[i].Type.Name + "|" + tokens[i].Type.Pattern + ") " + tokens[i].Value);
                 }
+            }
+            else
+            {
+                Console.WriteLine("No tokens were found :(");
+            }
 
-            // TODO: Add signs to tokens (+/-)
-            // get sum of signed tokens (not ready for multiply/divide yet)
+        // TODO: Add signs to tokens (+/-)
+        // get sum of signed tokens (not ready for multiply/divide yet)
 
-            return float.Parse("0"); // should be actual return NOT HARDCODED
+        return float.Parse("0"); // should be actual return NOT HARDCODED
 
         }
     }
